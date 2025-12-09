@@ -1,15 +1,15 @@
+import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { env } from "../../env.js";
-import { schema } from "./schema/index.js";
+import { articlesTable } from "./schema/index.js";
 
 export const client = new Pool({
-	host: env.DATABASE_HOST,
-	port: env.DATABASE_PORT,
-	user: env.DATABASE_USER,
-	password: env.DATABASE_PASSWORD,
-	database: env.DATABASE_NAME,
+	host: process.env.DATABASE_HOST!,
+	port: parseInt(process.env.DATABASE_PORT!, 10),
+	user: process.env.DATABASE_USER!,
+	password: process.env.DATABASE_PASSWORD!,
+	database: process.env.DATABASE_NAME!,
 	ssl: false,
 });
 
-export const db = drizzle(client, { schema });
+export const db = drizzle(client, { schema: { articlesTable } });

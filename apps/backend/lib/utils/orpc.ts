@@ -6,7 +6,7 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { CORSPlugin } from "@orpc/server/plugins";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import pino from "pino";
-import { appRouter } from "../../services/api/routers/index.js";
+import { appRouter } from "../../api/routers/index.js";
 
 const logger = pino();
 
