@@ -1,0 +1,38 @@
+services:
+  # If you change the image name, you need to change it in the deployment workflow as well
+  # web:
+  #   image: web:latest
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/web/Dockerfile
+  #   ports:
+  #     - "${WEB_PORT:-5080}:3000"
+  #   depends_on:
+  #     - backend
+  #   environment:
+  #     - PUBLIC_BACKEND_URL="http://backend:5070/rpc"
+
+  # backend:
+  #   image: backend:latest
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/backend/Dockerfile
+  #   ports:
+  #     - "${BACKEND_PORT:-5070}:${BACKEND_PORT:-5070}"
+  #   environment:
+  #     - PORT=${BACKEND_PORT:-5070}
+
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: 2dv515
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/postgresql
+
+volumes:
+  db-data:
