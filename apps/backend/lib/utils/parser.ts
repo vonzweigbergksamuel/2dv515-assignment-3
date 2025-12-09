@@ -56,9 +56,11 @@ const parseArticlesByCategory = async (
 	return articles;
 };
 
-const categories = await fs.readdir(
-	path.resolve("dataset", "wikipedia", "words"),
-);
+const categories = await fs
+	.readdir(path.resolve("dataset", "wikipedia", "words"))
+	.then((categories) =>
+		categories.filter((category) => category !== ".DS_Store"),
+	);
 
 export const parsedArticles = await Promise.all(
 	categories.map((category: string) =>
