@@ -1,5 +1,4 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: Process needs to be used */
-import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
