@@ -26,6 +26,9 @@ importers:
       '@orpc/experimental-pino':
         specifier: ^1.11.3
         version: 1.12.2(pino@10.1.0)
+      '@orpc/json-schema':
+        specifier: ^1.12.2
+        version: 1.12.2
       '@orpc/openapi':
         specifier: ^1.11.3
         version: 1.12.2

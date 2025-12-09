@@ -16,6 +16,7 @@
     "@hono/node-server": "^1.19.6",
     "@orpc/client": "^1.11.3",
     "@orpc/experimental-pino": "^1.11.3",
+    "@orpc/json-schema": "^1.12.2",
     "@orpc/openapi": "^1.11.3",
     "@orpc/server": "^1.11.3",
     "@orpc/zod": "^1.11.3",

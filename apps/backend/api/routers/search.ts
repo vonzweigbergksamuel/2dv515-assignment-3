@@ -15,12 +15,14 @@ export const searchRouter = {
 		.route({ method: "GET" })
 		.input(
 			z.object({
-				force: z.coerce.boolean().optional().default(false),
 				query: z.string(),
+				limit: z.number().optional().default(5),
+				force: z.boolean().optional().default(false),
 			}),
 		)
 		.output(outputSchema)
 		.handler(async ({ input }) => {
-			return await search(input.query);
+			console.log(`Search request: ${input.query}, force: ${input.force}`);
+			return await search(input.query, input.limit, input.force);
 		}),
 };

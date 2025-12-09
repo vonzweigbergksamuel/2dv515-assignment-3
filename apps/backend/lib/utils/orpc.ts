@@ -1,4 +1,4 @@
-import { LoggingHandlerPlugin } from "@orpc/experimental-pino";
+import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from "@orpc/json-schema";
 import { OpenAPIHandler } from "@orpc/openapi/fetch";
 import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { onError } from "@orpc/server";
@@ -10,6 +10,9 @@ import { appRouter } from "../../api/routers/index.js";
 export const openApiHandler = new OpenAPIHandler(appRouter, {
 	plugins: [
 		new CORSPlugin(),
+		new SmartCoercionPlugin({
+			schemaConverters: [new ZodToJsonSchemaConverter()],
+		}),
 		new OpenAPIReferencePlugin({
 			schemaConverters: [new ZodToJsonSchemaConverter()],
 		}),

@@ -9,8 +9,19 @@ interface ArticleByQuery {
 	wordFrequency: number;
 }
 
-async function getArticlesByQuery(query: string): Promise<ArticleByQuery[]> {
-	return await db
+const cachedQueries: Record<string, ArticleByQuery[]> = {};
+
+async function getArticlesByQuery(
+	query: string,
+	limit: number,
+	force: boolean,
+): Promise<ArticleByQuery[]> {
+	if (cachedQueries[query] && !force && cachedQueries[query].length === limit) {
+		console.log(`Returning cached query: ${query}`);
+		return cachedQueries[query];
+	}
+
+	const articles = await db
 		.select({
 			id: articlesTable.id,
 			name: articlesTable.name,
@@ -19,7 +30,11 @@ async function getArticlesByQuery(query: string): Promise<ArticleByQuery[]> {
 		.from(articlesTable)
 		.where(sql`(${articlesTable.wordCounts}->${query})::int > 0`)
 		.orderBy(sql`(${articlesTable.wordCounts}->${query})::int DESC`)
-		.limit(10);
+		.limit(limit);
+
+	cachedQueries[query] = articles;
+	console.log(`Returning new query: ${query}`);
+	return articles;
 }
 
 function normalizeScore(articles: ArticleByQuery[]): ArticleByQuery[] {
@@ -27,13 +42,17 @@ function normalizeScore(articles: ArticleByQuery[]): ArticleByQuery[] {
 	return articles.map((article) => ({
 		id: article.id,
 		name: article.name,
-		wordFrequency: article.wordFrequency / max,
+		wordFrequency: Number((article.wordFrequency / max).toFixed(2)),
 	}));
 }
 
-export async function search(query: string): Promise<ArticleByQuery[]> {
+export async function search(
+	query: string,
+	limit: number,
+	force: boolean,
+): Promise<ArticleByQuery[]> {
 	try {
-		const articles = await getArticlesByQuery(query);
+		const articles = await getArticlesByQuery(query, limit, force);
 
 		if (articles.length === 0) {
 			throw new ORPCError("NOT_FOUND", {
