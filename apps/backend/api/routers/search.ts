@@ -20,10 +20,7 @@ interface ArticleByQuery {
 }
 
 function normalizeScore(articles: ArticleByQuery[]): ArticleByQuery[] {
-	const max = Math.max(
-		Math.max(...articles.map((article) => article.wordFrequency)),
-		1,
-	);
+	const max = Math.max(articles[0].wordFrequency, 1);
 	return articles.map((article) => ({
 		id: article.id,
 		name: article.name,
@@ -42,12 +39,16 @@ export const searchRouter = {
 		)
 		.output(outputSchema)
 		.handler(async ({ input }) => {
-			console.log("query", input.query);
-
-			const articles = await db
-				.select()
+			const articles: ArticleByQuery[] = await db
+				.select({
+					id: articlesTable.id,
+					name: articlesTable.name,
+					wordFrequency: sql<number>`(${articlesTable.wordCounts}->${input.query})::int`,
+				})
 				.from(articlesTable)
-				.where(sql`(${articlesTable.wordCounts}->${input.query})::int > 0`);
+				.where(sql`(${articlesTable.wordCounts}->${input.query})::int > 0`)
+				.orderBy(sql`(${articlesTable.wordCounts}->${input.query})::int DESC`)
+				.limit(10);
 
 			if (articles.length === 0) {
 				throw new ORPCError("NOT_FOUND", {
@@ -55,27 +56,8 @@ export const searchRouter = {
 				});
 			}
 
-			const sortedArticles = articles.sort((a, b) => {
-				return (
-					(b.wordCounts as Record<string, number>)[input.query] -
-					(a.wordCounts as Record<string, number>)[input.query]
-				);
-			});
-			const normalizedScores = normalizeScore(
-				sortedArticles.map((article) => {
-					const score = (article.wordCounts as Record<string, number>)[
-						input.query
-					];
-					return {
-						id: article.id,
-						name: article.name,
-						wordFrequency: score,
-					};
-				}),
-			);
+			const normalizedArticles = normalizeScore(articles);
 
-			console.log("normalizedScores", normalizedScores);
-
-			return normalizedScores;
+			return normalizedArticles;
 		}),
 };
