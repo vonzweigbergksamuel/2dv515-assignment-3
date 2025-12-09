@@ -1,7 +1,17 @@
-import { eq } from "drizzle-orm";
+import { parsedArticles } from "../utils/parser.js";
 import { db } from "./index.js";
-import { schema } from "./schema/index.js";
+import { articlesTable } from "./schema/index.js";
 
-async function run() {}
+async function run() {
+	for (const article of parsedArticles) {
+		await db.insert(articlesTable).values({
+			name: article.name,
+			category: article.category,
+			wordCounts: article.wordCounts,
+		});
+	}
+
+	console.log("Seeded database");
+}
 
 run();
